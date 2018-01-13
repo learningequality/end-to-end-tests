@@ -1,0 +1,30 @@
+version: "2"
+
+
+volumes:
+  # chefworkingdir: {}
+  content_storage: {}
+  build:
+
+
+services:
+
+  kolibri:
+    container_name: kolibri
+    build:
+      context: ../../dockerfiles
+      dockerfile: Kolibri-prod
+    ports:
+      - 9018:80
+    expose:
+      - "80"
+    volumes:
+      - ../../build:/build
+      - content_storage:/content/storage
+    env_file: ../../credentials/prod.env
+    environment:
+      - KOLIBRI_PEX_PATH=/build/kolibri-0.7.0.pex
+      - KOLIBRI_PEX_URL=https://github.com/learningequality/kolibri/releases/download/v0.7.0/kolibri-0.7.0.pex
+      # - KOLIBRI_PORT=80
+    # command: use default
+

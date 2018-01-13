@@ -1,0 +1,27 @@
+FROM ubuntu:xenial
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+
+# install base
+RUN apt-get update -qq
+# RUN apt-get upgrade -y
+RUN apt-get install -y software-properties-common
+RUN apt-get install -y curl vim git wget
+RUN apt-get install -y sqlite3
+RUN apt-get install -y python2.7 python3.5 python-pip
+
+# provisioning scripts
+COPY ./scripts /scripts
+
+
+# create kolibri home dir
+RUN mkdir /kolibrihome
+WORKDIR /kolibrihome
+
+
+# initialize application state: migrate, device provision, import channels
+ENTRYPOINT ["/scripts/kolibri/prod_entrypoint.sh"]
+
+# start Kolibri on port 80 (cherrypy)
+CMD ["python", "/kolibrihome/kolibri.pex", "start", "--foreground", "--port=80"]
