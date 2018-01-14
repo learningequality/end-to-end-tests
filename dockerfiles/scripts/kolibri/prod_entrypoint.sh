@@ -22,7 +22,6 @@ fi
 if [ ! -f /kolibrihome/kolibri_settings.json ]; then
     echo "RUnnigg /kolibrihome/kolibri.pex language setdefault $KOLIBRI_LANG"
     python /kolibrihome/kolibri.pex language setdefault $KOLIBRI_LANG
-
     echo "\n\nTemporarily starting Kolibri to run deficeprovision.sh ..."
     python /kolibrihome/kolibri.pex start --foreground --port=$KOLIBRI_PORT &
     echo $! >/tmp/deficeprovision_kolibri.pid
@@ -33,6 +32,18 @@ if [ ! -f /kolibrihome/kolibri_settings.json ]; then
     sleep 1
     echo "deviceprovision.sh done"
 fi
+
+
+if [ ! -z ${CHANNELS_TO_IMPORT} ]; then
+    echo 'Importing channels $CHANNELS_TO_IMPORT'
+    cd /kolibrihome
+    for channel_id in $(echo "$CHANNELS_TO_IMPORT" | sed "s/,/ /g"); do
+        python /kolibrihome/kolibri.pex manage importchannel network $channel_id
+        python /kolibrihome/kolibri.pex manage importcontent network $channel_id
+        echo "Channel $channel_id finished importing"
+    done
+fi
+
 
 
 # until psql $DATABASE_URL -c '\l'; do
