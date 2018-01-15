@@ -31,8 +31,8 @@ python manage.py loadconstants
 #    java -jar crowdin-cli.jar download
 #    python manage.py compilemessages
 
-# ???
-# python manage.py calculateresources --init
+# 
+python manage.py calculateresources --init
 
 
 

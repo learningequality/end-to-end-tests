@@ -10,7 +10,7 @@ else
 fi
 
 
-if [ ! -z ${KOLIBRI_PEX_PATH} ] && [ ! -f /kolibrihome/kolibri.pex ] ; then
+if [ ! -z ${KOLIBRI_PEX_PATH} ] && [ -f "$KOLIBRI_PEX_PATH" ] && [ ! -f /kolibrihome/kolibri.pex ] ; then
     cp "$KOLIBRI_PEX_PATH" /kolibrihome/kolibri.pex
 fi
 
