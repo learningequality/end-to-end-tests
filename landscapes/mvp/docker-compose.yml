@@ -42,7 +42,7 @@ services:
     build:
       dockerfile: Studio-prod
       context: ../../dockerfiles
-    depends_on:
+    links:
       - studiodb
     ports:
       - 8000:8000
@@ -54,8 +54,11 @@ services:
       - ../../envs/prod.env
     environment:
       - DB_CREDENTIALS_HOST=studiodb
-      - DJANGO_SETTINGS_MODULE=contentcuration.dev_settings
-      #- DJANGO_SETTINGS_MODULE=contentcuration.production_settings
+      # - DJANGO_SETTINGS_MODULE=contentcuration.dev_settings
+      - DJANGO_SETTINGS_MODULE=contentcuration.production_settings
+    command: ["gunicorn", "contentcuration.wsgi:application", "--timeout=500", "--error-logfile=/var/log/gunicorn-error.log", "--workers=3", "--bind=0.0.0.0:8000", "--pid=/tmp/contentcuration.pid", "--log-level=debug"]
+    # command: ["/bin/sleep", "10000"]
+    # /usr/local/bin/gunicorn contentcuration.contentcuration.wsgi:application --timeout=500 --error-logfile=/var/log/gunicorn-error.log --workers=3 --bind=0.0.0.0:8000 --pid=/tmp/contentcuration.pid --log-level=debug
 
 
   studiodb:

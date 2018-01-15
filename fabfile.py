@@ -1,5 +1,6 @@
 #/usr/bin/env python
 import os
+import shutil
 
 from fabric.api import *
 from fabric.api import shell_env
@@ -27,14 +28,20 @@ env.landscape = 'mvp'
 ################################################################################
 
 @task
-def kolibri_poc_run():
+def kolibri_poc_build():
     # Copy over source code files so they will be in build context
     if not os.path.exists('dockerfiles/src'):
         os.mkdir('dockerfiles/src')
+    if os.path.exists('dockerfiles/src/studio'):
+        shutil.rmtree('dockerfiles/src/studio')
     local('cp -r src/studio dockerfiles/src/')
     with lcd('landscapes/mvp'):
         dcbuild()
         local('rm -rf ../../dockerfiles/src/studio')
+
+@task
+def kolibri_poc_up():
+    with lcd('landscapes/mvp'):
         dcup()
 
 

@@ -44,10 +44,10 @@ WORKDIR /contentcuration
 RUN gcloud debug source gen-repo-info-file --output-directory=/contentcuration/contentcuration/
 
 
-RUN pip install -r requirements.txt
-RUN pip install -r requirements_prod.txt
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements_prod.txt
 # TMP hack so works for prod and dev #################################
-RUN pip install -r requirements_dev.txt
+RUN pip install --no-cache-dir -r requirements_dev.txt
 RUN npm install -g yarn
 
 # generate the node bundles
@@ -58,16 +58,12 @@ RUN node build.js --prod
 # Download the crowdin-cli.jar file
 RUN curl -L https://storage.googleapis.com/le-downloads/crowdin-cli/crowdin-cli.jar -o crowdin-cli.jar
 
+
+
 EXPOSE 8000
 
 # initialize application: migrate collectstatic ensurecrowdinclient downloadmessages compilemessages
 ENTRYPOINT ["/scripts/studio/entrypoint.sh"]
 
-CMD ["gunicorn", "contentcuration.wsgi:application", \
-     "--timeout=500", \
-     "--error-logfile=/var/log/gunicorn-error.log", \
-     "--workers=3", \
-     "--bind=0.0.0.0:8000", \
-     "--pid=/tmp/contentcuration.pid", \
-     "--log-level=debug"]
+CMD ["gunicorn", "contentcuration.wsgi:application", "--timeout=500", "--error-logfile=/var/log/gunicorn-error.log", "--workers=3", "--bind=0.0.0.0:8000", "--pid=/tmp/contentcuration.pid", "--log-level=debug"]
 
