@@ -1,3 +1,9 @@
+# ignore src dirs
+src/
+# and src dir copy inside build context
+dockerfiles/src/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

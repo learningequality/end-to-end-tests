@@ -1,4 +1,5 @@
 #/usr/bin/env python
+import os
 
 from fabric.api import *
 from fabric.api import shell_env
@@ -27,20 +28,68 @@ env.landscape = 'mvp'
 
 @task
 def kolibri_poc_run():
+    # Copy over source code files so they will be in build context
+    if not os.path.exists('dockerfiles/src'):
+        os.mkdir('dockerfiles/src')
+    local('cp -r src/studio dockerfiles/src/')
     with lcd('landscapes/mvp'):
         dcbuild()
+        local('rm -rf ../../dockerfiles/src/studio')
         dcup()
+
 
 @task
 def kolibri_poc_down():
     with lcd('landscapes/mvp'):
-        dcdown()
+        dcdown(options='-v')
 
 
 
 # HIGH-LEVEL CHECKS API
 ################################################################################
 
+
+
+# SOURCE CODE UTILS
+################################################################################
+
+STUDIO_GIT_REPO_URL = 'https://github.com/fle-internal/content-curation.git'
+STUDIO_GIT_BRANCH = 'master'
+
+@task
+def checkout_studio(branch='master'):
+    if not os.path.exists('src'):
+        os.mkdir('src')
+    with lcd('src/'):
+        if not os.path.exists('studio'):
+            git_clone(STUDIO_GIT_REPO_URL, dirname='studio')
+        with lcd('studio'):
+            update(branch=branch)
+
+
+
+# GIT UTILS
+################################################################################
+
+@task
+def git_clone(repo_repo_url, branch='master', dirname=''):
+    local('git clone ' + repo_repo_url + ' ' + dirname)
+    local('git checkout ' + branch)
+
+@task
+def git_fetch(branch='master'):
+    local('git fetch origin ' + branch)
+
+@task
+def update(branch='master'):
+    git_fetch(branch=branch)
+    local('git checkout ' + branch)
+    ###EZ### local('git reset --hard origin/' + branch)
+    # update requirements
+    # activate_sh = os.path.join(CHEF_DATA_DIR, 'venv/bin/activate')
+    # reqs_filepath = os.path.join(CHEF_DATA_DIR, 'requirements.txt')
+    # with prefix('export HOME=/data && source ' + activate_sh):
+    #     sudo('pip install -U --no-input --quiet -r ' + reqs_filepath)
 
 
 # DOCKER-COMPOSE API
@@ -75,7 +124,8 @@ def read_compose_override():
     with settings(abort_exception=Exception):
         try:
             fd = StringIO()
-            get('docker-compose.override.yml', fd)
+            # get('docker-compose.override.yml', fd)
+            get('docker-compose.yml', fd)
             fd.seek(0)
             return yaml.load(fd.read()) or {}
         except Exception:
