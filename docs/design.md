@@ -19,10 +19,12 @@ The testing matrix (testing tensor) has the following dimensions:
   - Version of `ricecooker`
   - Version of `kolibri` used
   - Packaging method for `kolibri` (src, pip, pex, whl, deb)
+  - Linux variants ([Debian, Ubuntu 14.04, 16.04, 17.04, 17.10]()
+    Can't use docker for MAC, WIN, ANDROID so will need a new provision/scripting approach.
   - Version of Python used for `kolibri` (py27, py34, py35, py36)
+    See [current state](https://docs.google.com/spreadsheets/d/1CAzop-fEZyF-mra9ByJRWHqg4irco1MrTArcJKM8P-4/edit#gid=0) .
   - Version of `studio` used
   - TODO: version of Python used for `studio` (py27, py35, py36)
-
 
 The full suite of end-to-end checks for a particular combination of version in the
 testing tensor could take 1h/2h and can be performed on a daily basis.
